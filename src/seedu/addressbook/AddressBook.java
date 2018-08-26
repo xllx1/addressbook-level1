@@ -14,14 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /*
  * NOTE : =============================================================
@@ -132,6 +125,12 @@ public class AddressBook {
     private static final String COMMAND_EXIT_WORD = "exit";
     private static final String COMMAND_EXIT_DESC = "Exits the program.";
     private static final String COMMAND_EXIT_EXAMPLE = COMMAND_EXIT_WORD;
+
+    /*@Xiaolin 2018/08/26*/
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String COMMAND_SORT_DESC = "Displays all persons as a list with index numbers"
+                                                    +" in alphabetical order.";
+    private static final String COMMAND_SORT_EXAMPLE = COMMAND_SORT_WORD;
 
     private static final String DIVIDER = "===================================================";
 
@@ -383,6 +382,8 @@ public class AddressBook {
             return getUsageInfoForAllCommands();
         case COMMAND_EXIT_WORD:
             executeExitProgramRequest();
+        case COMMAND_SORT_WORD:
+            return executeSortAllPersonInAddressBook();
         default:
             return getMessageForInvalidCommandInput(commandType, getUsageInfoForAllCommands());
         }
@@ -594,6 +595,14 @@ public class AddressBook {
         return getMessageForPersonsDisplayedSummary(toBeDisplayed);
     }
 
+    /*@Xiaolin 2018/08/26*/
+    private static String executeSortAllPersonInAddressBook()
+    {
+        ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
+        showSortedToUser(toBeDisplayed);
+        return getMessageForPersonsDisplayedSummary(toBeDisplayed);
+    }
+
     /**
      * Requests to terminate the program.
      */
@@ -650,6 +659,23 @@ public class AddressBook {
         updateLatestViewedPersonListing(persons);
     }
 
+    /*@Xiaolin 2018/08/26*/
+    private static void showSortedToUser(ArrayList<String[]> persons)
+    {
+        Collections.sort(persons, new Comparator<String[]>() {
+            public int compare(String[] x, String[] y) {
+                int res = String.CASE_INSENSITIVE_ORDER.compare(x[0], y[0]);
+                if (res == 0) {
+                    res = x[0].compareTo(y[0]);
+                }
+                return res;
+            }
+        });
+        String listAsString = getDisplayString(persons);
+        showToUser(listAsString);
+        updateLatestViewedPersonListing(persons);
+    }
+
     /**
      * Returns the display string representation of the list of persons.
      */
@@ -664,6 +690,7 @@ public class AddressBook {
         }
         return messageAccumulator.toString();
     }
+
 
     /**
      * Constructs a prettified listing element message to represent a person and their data.
