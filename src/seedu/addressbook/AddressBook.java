@@ -486,12 +486,27 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            /*if (!Collections.disjoint(wordsInName, keywords)) {
                 matchedPersons.add(person);
-            }
+            }*/
+            if(compareIgnoreCase(keywords, wordsInName))
+                matchedPersons.add(person);
         }
         return matchedPersons;
     }
+    private static boolean compareIgnoreCase(Collection<String> comp_keyword, Set<String> comp_wordsInName)
+    {
+        for(String i: comp_keyword)
+        {
+            for(String j: comp_wordsInName)
+            {
+                if(i.equalsIgnoreCase(j))
+                    return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Deletes person identified using last displayed index.
